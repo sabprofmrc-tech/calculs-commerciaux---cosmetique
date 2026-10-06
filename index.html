@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sève &amp; Sel · Calculs commerciaux</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1F2B27; --soft:#4F5F59;
+  --euc:#2E5E4E; --euc-d:#21473B; --sage:#D7E6DD; --mist:#EEF3EF;
+  --paper:#FFFFFF; --paper-l:#FBF8F1;
+  --rose:#A93F52; --rose-bg:#FBEAEC; --honey-bg:#FBF0D6; --honey-l:#E3B34C; --honey:#7A5304;
+  --line:#C9D8CF;
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible","Segoe UI",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:var(--body);color:var(--ink);background:var(--mist);font-size:16px;line-height:1.45;padding-bottom:env(safe-area-inset-bottom,0)}
+h1,h2,h3{font-family:var(--display);line-height:1.15;margin:0}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid #E3A72F;outline-offset:2px}
+
+/* En-tête */
+.top{position:sticky;top:0;z-index:20;background:var(--euc-d);color:#fff;display:flex;align-items:center;gap:10px;padding:8px 12px;padding-top:calc(8px + env(safe-area-inset-top,0))}
+.brand{font-family:var(--display);font-weight:800;font-size:1.1rem;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.steps{display:flex;gap:4px;list-style:none;margin:0;padding:0;flex:1;justify-content:center}
+.steps button{background:transparent;border:1.5px solid rgba(255,255,255,.35);color:#fff;border-radius:999px;padding:4px 10px;font-size:.85rem;display:flex;gap:6px;align-items:center;min-height:36px}
+.steps button[aria-current="step"]{background:#fff;color:var(--euc-d);font-weight:700}
+.steps button:disabled{opacity:.35;cursor:not-allowed}
+.steps .dot{font-weight:700}
+.carnet-btn{background:#8FCBAE;color:var(--euc-d);border:0;border-radius:10px;padding:6px 10px;font-weight:700;min-height:36px;white-space:nowrap}
+@media (max-width:720px){.steps .lbl{display:none}.brand .txt{display:none}}
+
+main{max-width:1180px;margin:0 auto;padding:14px 12px 30px}
+
+/* Bandeau mission */
+.mhead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:2px 4px 10px;flex-wrap:wrap}
+.mhead h2{font-size:1.25rem;color:var(--euc-d)}
+.mhead .goal{color:var(--soft);font-size:.92rem}
+
+/* Livre ouvert */
+.book{display:grid;grid-template-columns:1fr 1fr;background:var(--paper);border-radius:14px;box-shadow:0 1px 0 var(--line),0 10px 28px rgba(31,43,39,.12);overflow:hidden;position:relative}
+.book::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:28px;margin-left:-14px;background:linear-gradient(90deg,transparent,rgba(31,43,39,.10) 48%,rgba(31,43,39,.16) 50%,rgba(31,43,39,.10) 52%,transparent);pointer-events:none}
+.page{padding:18px 22px 20px;min-width:0}
+.page.res-page{background:var(--paper-l)}
+.ptitle{font-family:var(--display);font-weight:700;font-size:.95rem;color:var(--soft);margin:0 0 10px;display:flex;justify-content:space-between}
+@media (max-width:760px){
+  .book{grid-template-columns:1fr}
+  .book::before{display:none}
+  .page{padding:14px 14px 16px}
+  .book{overflow:visible}
+  .page.res-page{border-bottom:2px dashed var(--line);position:sticky;top:52px;z-index:5;max-height:40vh;max-height:40dvh;overflow:auto;border-radius:14px 14px 0 0;box-shadow:0 6px 10px -6px rgba(31,43,39,.25)}
+  .page.res-page .ptitle{margin-bottom:6px}
+  .mhead{margin-bottom:8px}.mhead h2{font-size:1.05rem}.mhead .goal{font-size:.82rem}
+  .res-b{font-size:.88rem}
+}
+
+/* Ressources */
+.res{border:1.5px solid var(--ink);border-radius:4px;margin-bottom:10px;background:#fff}
+.res-h{background:var(--ink);color:#fff;padding:4px 10px;font-weight:700;font-size:.85rem}
+.res-b{padding:8px 10px;font-size:.92rem}
+.prod{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:4px 0;border-bottom:1px dashed var(--line)}
+.prod:last-child{border-bottom:0}
+.prod .pn{grid-column:1/-1;font-weight:700}
+.prod span:nth-child(odd){color:var(--soft)}
+.prod b{font-variant-numeric:tabular-nums;text-align:right}
+.res ul{margin:0;padding-left:18px}
+table.mini{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:.92rem}
+.mini th,.mini td{border:1px solid #8C9C95;padding:4px 6px;text-align:center}
+.mini thead th{background:var(--euc-d);color:#fff}
+.mini td:first-child,.mini th:first-child{text-align:left}
+.mini .v{background:#DDEEE4;font-weight:700}
+.legend{font-size:.8rem;color:var(--soft);margin-top:4px}
+.mob{display:none}
+@media (max-width:760px){.mob{display:inline}}
+.mine{border:1.5px dashed #6E9A86;border-radius:6px;background:#fff;padding:6px 10px;font-variant-numeric:tabular-nums}
+.mine .mh{font-weight:700;font-size:.85rem;color:var(--euc-d);margin-bottom:2px}
+.mine .l{display:flex;justify-content:space-between;gap:8px;font-size:.92rem}
+.mine .l.wait b{color:#9AA8A2;font-weight:400}
+
+/* Page de calcul */
+.cp h3{font-size:1.15rem;margin-bottom:2px}
+.cp .cons{margin:0 0 12px;color:var(--soft)}
+.fields{display:grid;gap:12px}
+.field{border-left:3px solid var(--sage);padding:2px 0 2px 10px}
+.field.ok{border-left-color:var(--euc)}
+.field.help{border-left-color:var(--honey-l)}
+.field label{display:block;font-weight:700;margin-bottom:4px}
+.row{display:flex;gap:6px;align-items:center}
+.row input{flex:1;min-width:0;max-width:170px;font:inherit;font-size:17px;font-variant-numeric:tabular-nums;padding:8px 10px;border:2px solid var(--line);border-radius:10px;min-height:44px;background:#fff}
+.row input:disabled{background:var(--mist);border-color:transparent;font-weight:700;color:var(--ink)}
+.unit{color:var(--soft);min-width:1.2em}
+.btn{background:var(--euc);color:#fff;border:0;border-radius:10px;padding:10px 14px;font-weight:700;min-height:44px}
+.btn:hover{background:var(--euc-d)}
+.btn.ghost{background:#fff;color:var(--euc-d);border:2px solid var(--euc)}
+.row .btn:disabled{display:none}
+.fb{margin-top:6px;font-size:.92rem}
+.fb:empty{display:none}
+.ok-m{color:var(--euc-d);font-weight:700}
+.ko-m{color:var(--rose);font-weight:700}
+.formula{display:block;margin-top:4px;background:var(--rose-bg);border:1px solid #E6B9C0;border-radius:8px;padding:5px 8px;font-weight:700}
+.hint{display:block;margin-top:4px;background:var(--mist);border-radius:8px;padding:5px 8px}
+.reveal{margin-top:4px;background:var(--honey-bg);border:1px solid var(--honey-l);border-radius:8px;padding:6px 8px;color:#4A3503}
+.choices{display:grid;gap:6px;margin:8px 0 10px}
+.choice{display:flex;gap:8px;align-items:flex-start;padding:9px 10px;border:2px solid var(--line);border-radius:10px;background:#fff;min-height:44px;cursor:pointer}
+.choice input{margin-top:3px;width:18px;height:18px;accent-color:var(--euc);flex:none}
+.choice.right{border-color:var(--euc);background:#EAF4EE}
+.choice.wrong{border-color:#E6B9C0;background:var(--rose-bg)}
+textarea{width:100%;min-height:96px;font:inherit;font-size:16px;padding:8px 10px;border:2px solid var(--line);border-radius:10px}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}
+.nav .pg{font-size:.85rem;color:var(--soft)}
+.nav .btn:disabled{opacity:.35;cursor:not-allowed}
+
+/* Feuille carnet */
+.sheet{position:fixed;inset:0;background:rgba(20,30,27,.45);z-index:40;display:flex;align-items:flex-end;justify-content:center}
+.sheet[hidden]{display:none}
+.sheet-in{background:#FFFEFB;width:100%;max-width:460px;max-height:85vh;overflow:auto;border-radius:16px 16px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom,0))}
+@media (min-width:761px){.sheet{align-items:center}.sheet-in{border-radius:12px}}
+.sheet h2{font-size:1.15rem;text-align:center}
+.grp{border-top:1.5px dashed #A9BDB2;margin-top:8px;padding-top:6px;font-variant-numeric:tabular-nums}
+.grp-t{font-weight:700;font-size:.85rem;color:var(--euc-d)}
+.grp .l{display:flex;justify-content:space-between;font-size:.9rem}
+.grp .l.todo span:last-child{color:#9AA8A2}
+.h{color:var(--honey);font-weight:700}
+
+/* Accueil */
+.home{max-width:620px;margin:6px auto;display:grid;gap:14px}
+.hero{background:var(--euc-d);color:#fff;border-radius:16px;padding:22px}
+.hero h1{font-size:clamp(1.6rem,6vw,2.4rem);font-weight:800}
+.hero p{margin:8px 0 0;opacity:.92}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;gap:10px}
+.card label{font-weight:700;display:block;margin-bottom:3px}
+.card input{width:100%;font:inherit;font-size:17px;padding:9px 10px;border:2px solid var(--line);border-radius:10px;min-height:44px}
+.rules{margin:0;padding-left:18px}
+.err{color:var(--rose);font-weight:700;min-height:1.2em}
+
+/* Bilan */
+.bilan{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px}
+.b-head{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;border-bottom:2px solid var(--euc);padding-bottom:8px;margin-bottom:8px}
+.b-head h1{font-size:1.2rem;color:var(--euc-d)}
+.score{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.score span{border-radius:999px;padding:3px 10px;font-weight:700;font-size:.82rem}
+.s1{background:#EAF4EE;color:var(--euc-d)}.s2{background:var(--mist)}.s3{background:var(--honey-bg);color:#4A3503}
+.b-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media (max-width:900px){.b-cols{grid-template-columns:1fr}}
+.b-col h2{font-size:.95rem;background:var(--sage);padding:3px 8px;border-radius:6px;margin-bottom:4px}
+.b-t{width:100%;border-collapse:collapse;font-size:.78rem;font-variant-numeric:tabular-nums}
+.b-t td,.b-t th{padding:2px 4px;border-bottom:1px solid #E1EAE4;text-align:left}
+.b-t td:not(:first-child){text-align:right;white-space:nowrap}
+.st{font-weight:700}.st.a{color:var(--euc-d)}.st.b{color:var(--soft)}.st.c{color:var(--honey)}
+.b-com{font-size:.8rem;background:var(--mist);border-radius:6px;padding:5px 8px;margin-top:5px}
+.b-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:14px 0}
+.capture{background:var(--honey-bg);border:1px solid var(--honey-l);border-radius:10px;padding:10px 12px;color:#4A3503;margin-top:12px;font-size:.92rem}
+@media print{.top,.b-actions,.capture{display:none!important}body{background:#fff}}
+@media (prefers-reduced-motion:no-preference){.book{animation:turn .3s ease-out}@keyframes turn{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:none}}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><svg width="22" height="22" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3C8 9 6 16 9 23c2 4 5 6 7 6s5-2 7-6c3-7 1-14-7-20z" fill="#8FCBAE"/></svg><span class="txt">Sève &amp; Sel</span></div>
+  <ol class="steps" id="steps"></ol>
+  <button class="carnet-btn" id="carnetBtn" type="button" hidden>Carnet</button>
+</header>
+<main id="app"></main>
+<div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-label="Mon carnet de calculs">
+  <div class="sheet-in"><div id="sheetBody"></div><button class="btn" type="button" id="sheetClose" style="width:100%;margin-top:12px">Fermer</button></div>
+</div>
+
+<script>
+/* ================= DONNÉES ================= */
+const P = {
+  A:{nom:"Sérum éclat vitamine C", c:"Sérum"},
+  B:{nom:"Baume à lèvres karité", c:"Baume"},
+  C:{nom:"Crème hydratante aloe vera", c:"Crème"},
+  D:{nom:"Shampooing solide", c:"Shampooing"}
+};
+// [S, C, L, V] mars, avril, mai + stock final
+const CAD = {
+  A:{m:[[30,40,40,52],[18,60,60,48],[30,50,50,70]], sf:10},
+  B:{m:[[24,30,30,36],[18,40,40,34],[24,50,50,58]], sf:16},
+  C:{m:[[36,24,24,20],[40,20,20,22],[38,20,20,26]], sf:32},
+  D:{m:[[18,30,30,25],[23,30,30,28],[25,35,35,33]], sf:27}
+};
+const r2 = x => Math.round((x+1e-9)*100)/100;
+
+function stockFields(k){
+  const d = CAD[k];
+  const v = d.m.reduce((s,m)=>s+m[3],0), l = d.m.reduce((s,m)=>s+m[2],0);
+  const si = d.m[0][0], sf = d.sf, sm = (si+sf)/2, rot = v/sm;
+  const avg4 = (d.m[0][0]+d.m[1][0]+d.m[2][0]+sf)/4;
+  return [
+    {id:k+"_v", label:"Ventes", short:"ventes", unit:"", dec:0, answer:v,
+     formula:"Ventes = V mars + V avril + V mai", hint:"Additionne les 3 colonnes V.",
+     traps:[{v:l,msg:"Ce sont les livraisons (L)."}]},
+    {id:k+"_sm", label:"Stock moyen", short:"stock moyen", unit:"", dec:2, answer:r2(sm),
+     formula:"Stock moyen = (stock initial + stock final) ÷ 2", hint:"Stock initial = S de mars.",
+     traps:[{v:r2(avg4),msg:"Prends seulement le stock initial et le stock final."},{v:si+sf,msg:"Il manque la division par 2."}]},
+    {id:k+"_rot", label:"Coefficient de rotation", short:"rotation", unit:"", dec:2, answer:r2(rot),
+     formula:"Rotation = ventes ÷ stock moyen", hint:"Tes 2 résultats précédents.",
+     traps:[{v:r2(sm/ventesSafe(v)),msg:"Division inversée."}]},
+    {id:k+"_d", label:"Durée de stockage", short:"durée", unit:"j", dec:2, answer:r2(90/rot), accept:[r2(90/rot),r2(90/r2(rot))],
+     formula:"Durée = 90 jours ÷ rotation", hint:"Mars à mai = 3 × 30 = 90 jours.",
+     traps:[{v:r2(30/rot),msg:"La période dure 3 mois, pas 1."},{v:r2(360/rot),msg:"La période dure 3 mois, pas 1 an."}]}
+  ];
+}
+function ventesSafe(v){return v||1}
+
+const MISSIONS = [
+ {titre:"Je fixe mes prix", court:"Prix", goal:"Promo Fête des mères : prix et marges de 2 produits.",
+  steps:[
+   {titre:"Remise sur le sérum", cons:"Calcule le montant de la remise.", res:["r1","r2"],
+    fields:[{id:"a_rem", label:"Remise", short:"Remise sérum", unit:"€", answer:4.98,
+      formula:"Remise = PV TTC × taux de remise", hint:"20 % = 0,20.",
+      traps:[{v:19.92,msg:"Ça, c'est le prix après remise."}]}]},
+   {titre:"PV TTC promo du sérum", cons:"Calcule le prix payé par la cliente.", res:["r1"], uses:["a_rem"],
+    fields:[{id:"a_ttc", label:"PV TTC promo", short:"PV TTC promo sérum", unit:"€", answer:19.92,
+      formula:"PV TTC promo = PV TTC − remise", hint:"Pars de 24,90 €.",
+      traps:[{v:29.88,msg:"Une remise se retire."}]}]},
+   {titre:"PV HT promo du sérum", cons:"Enlève la TVA.", res:["r1"], uses:["a_ttc"],
+    fields:[{id:"a_ht", label:"PV HT promo", short:"PV HT promo sérum", unit:"€", answer:16.60,
+      formula:"PV HT = PV TTC ÷ 1,20", hint:"Utilise le PV TTC promo.",
+      traps:[{v:15.94,msg:"On divise par 1,20, on ne retire pas 20 %."},{v:20.75,msg:"Utilise le prix promo."}]}]},
+   {titre:"Marge sur le sérum", cons:"Calcule la marge unitaire.", res:["r1"], uses:["a_ht"],
+    fields:[{id:"a_mg", label:"Marge", short:"Marge sérum", unit:"€", answer:7.60,
+      formula:"Marge = PV HT − prix d'achat HT", hint:"Prix d'achat HT : ressource 1.",
+      traps:[{v:10.92,msg:"La marge se calcule avec le HT."},{v:11.75,msg:"Utilise le prix promo."}]}]},
+   {type:"qcm", id:"q_cdc", titre:"Cahier des charges", res:["r2"], uses:["a_ttc","a_mg"],
+    question:"Le sérum en promo respecte-t-il le cahier des charges ?",
+    options:["Oui : prix < 20 € et marge > 7 €","Non : le prix est trop élevé","Non : la marge est trop faible"], correct:0,
+    explain:"19,92 € < 20 € et 7,60 € > 7 €."},
+   {titre:"Prix d'achat du baume", cons:"Retrouve le prix d'achat HT.", res:["r1"],
+    fields:[{id:"b_pa", label:"Prix d'achat HT", short:"Prix d'achat baume", unit:"€", answer:2.76,
+      formula:"Prix d'achat = PV TTC ÷ coefficient", hint:"Prix d'achat × coef = PV TTC.",
+      traps:[{v:17.25,msg:"Le prix d'achat est plus petit que le prix de vente."}]}]},
+   {titre:"PV HT du baume", cons:"Enlève la TVA.", res:["r1"],
+    fields:[{id:"b_ht", label:"PV HT", short:"PV HT baume", unit:"€", answer:5.75,
+      formula:"PV HT = PV TTC ÷ 1,20", hint:"PV TTC du baume : ressource 1.",
+      traps:[{v:5.52,msg:"On divise par 1,20, on ne retire pas 20 %."}]}]},
+   {titre:"Marge sur le baume", cons:"Calcule la marge unitaire.", res:[], uses:["b_pa","b_ht"],
+    fields:[{id:"b_mg", label:"Marge", short:"Marge baume", unit:"€", answer:2.99,
+      formula:"Marge = PV HT − prix d'achat HT", hint:"Tes 2 résultats précédents.",
+      traps:[{v:4.14,msg:"La marge se calcule avec le HT."}]}]}
+  ]},
+ {titre:"Je suis mon stock", court:"Stock", goal:"Cadencier mars → mai. Seuil : 20 jours maximum.",
+  steps:[
+   {titre:P.A.nom, cons:"Calcule les 4 indicateurs.", res:["cad:A"], fields:stockFields("A")},
+   {titre:P.B.nom, cons:"Calcule les 4 indicateurs.", res:["cad:B"], fields:stockFields("B")},
+   {titre:P.C.nom, cons:"Calcule les 4 indicateurs.", res:["cad:C"], fields:stockFields("C")},
+   {titre:P.D.nom, cons:"Calcule les 4 indicateurs.", res:["cad:D"], fields:stockFields("D")},
+   {type:"qcm", id:"q_long", multi:true, titre:"Durées trop longues", res:["stock"],
+    question:"Quels produits dépassent 20 jours ? (plusieurs réponses)",
+    options:[P.A.nom,P.B.nom,P.C.nom,P.D.nom], correct:[2,3], explain:"Crème : 45 j. Shampooing : 23,56 j."},
+   {type:"qcm", id:"q_vite", titre:"Le plus rapide", res:["stock"],
+    question:"Quel stock se renouvelle le plus vite ?",
+    options:[P.A.nom,P.B.nom,P.C.nom,P.D.nom], correct:0, explain:"Sérum : rotation 8,50, durée 10,59 j."},
+   {type:"qcm", id:"q_action", titre:"Action", res:["stock"],
+    question:"Pour la crème hydratante, je propose de…",
+    options:["Commander plus","Commander moins et relancer les ventes","Ne rien changer"], correct:1,
+    explain:"45 jours : le produit dort en réserve."},
+   {type:"text", id:"t_stock", titre:"Mon commentaire", res:["stock"], question:"2 phrases avec tes chiffres.", placeholder:"De mars à mai, …"}
+  ]},
+ {titre:"J'analyse mon CA", court:"CA", goal:"Objectifs : CA ≥ 1 800 € TTC et bénéfice ≥ 500 €.",
+  steps:[
+   {titre:"Ventes de mai", cons:"Relève les ventes de mai.", res:["cad:A","cad:B"],
+    fields:[
+     {id:"v_s", label:"Sérums vendus", short:"Ventes mai sérum", unit:"", dec:0, answer:70, formula:"Colonne V de mai", hint:"Ligne Mai, colonne V.", traps:[{v:170,msg:"Seulement mai."},{v:50,msg:"Ce sont les livraisons."}]},
+     {id:"v_b", label:"Baumes vendus", short:"Ventes mai baume", unit:"", dec:0, answer:58, formula:"Colonne V de mai", hint:"Ligne Mai, colonne V.", traps:[{v:128,msg:"Seulement mai."},{v:50,msg:"Ce sont les livraisons."}]}]},
+   {titre:"CA TTC", cons:"Par produit, puis le total.", res:["r1"], uses:["a_ttc","v_s","v_b"],
+    fields:[
+     {id:"ca_s", label:"CA TTC sérum", short:"CA TTC sérum", unit:"€", answer:1394.40, formula:"CA TTC = PV TTC × quantité", hint:"Sérum en promo en mai.", traps:[{v:1743,msg:"En mai, le sérum est en promo."}]},
+     {id:"ca_b", label:"CA TTC baume", short:"CA TTC baume", unit:"€", answer:400.20, formula:"CA TTC = PV TTC × quantité", hint:"PV TTC baume : ressource 1."},
+     {id:"ca_t", label:"CA TTC total", short:"CA TTC total", unit:"€", answer:1794.60, formula:"Total = CA sérum + CA baume", hint:"Additionne."}]},
+   {titre:"CA HT", cons:"Par produit, puis le total.", res:[], uses:["a_ht","b_ht","v_s","v_b"],
+    fields:[
+     {id:"cah_s", label:"CA HT sérum", short:"CA HT sérum", unit:"€", answer:1162.00, formula:"CA HT = PV HT × quantité", hint:"PV HT promo du sérum.", traps:[{v:1115.52,msg:"On divise par 1,20."}]},
+     {id:"cah_b", label:"CA HT baume", short:"CA HT baume", unit:"€", answer:333.50, formula:"CA HT = PV HT × quantité", hint:"PV HT du baume.", traps:[{v:320.16,msg:"On divise par 1,20."}]},
+     {id:"cah_t", label:"CA HT total", short:"CA HT total", unit:"€", answer:1495.50, formula:"Total = CA HT sérum + CA HT baume", hint:"Additionne.", traps:[{v:1435.68,msg:"On divise par 1,20."}]}]},
+   {titre:"Total des coûts", cons:"Achats des articles vendus + frais.", res:["r1","r4"], uses:["b_pa","v_s","v_b"],
+    fields:[
+     {id:"co_s", label:"Coût d'achat sérums", short:"Coût achat sérums", unit:"€", answer:630.00, formula:"Coût d'achat = prix d'achat HT × quantité", hint:"Prix d'achat sérum : ressource 1.", traps:[{v:1530,msg:"Seulement mai."}]},
+     {id:"co_b", label:"Coût d'achat baumes", short:"Coût achat baumes", unit:"€", answer:160.08, formula:"Coût d'achat = prix d'achat HT × quantité", hint:"Prix d'achat baume : ton carnet."},
+     {id:"co_f", label:"Frais de l'opération", short:"Frais", unit:"€", answer:150.00, formula:"Frais = présentoir + flyers", hint:"Ressource 4."},
+     {id:"co_t", label:"Total des coûts", short:"Total coûts", unit:"€", answer:940.08, formula:"Total = achats sérums + achats baumes + frais", hint:"Additionne les 3.", traps:[{v:790.08,msg:"Tu as oublié les frais."}]}]},
+   {titre:"Bénéfice", cons:"Calcule le bénéfice de l'opération.", res:[], uses:["cah_t","co_t"],
+    fields:[{id:"ben", label:"Bénéfice", short:"Bénéfice", unit:"€", answer:555.42, formula:"Bénéfice = CA HT − total des coûts", hint:"Les coûts sont HT.", traps:[{v:854.52,msg:"Utilise le CA HT."},{v:705.42,msg:"Tu as oublié les frais."}]}]},
+   {titre:"Taux de réalisation", cons:"Compare aux objectifs.", res:["r4"], uses:["ca_t","ben"],
+    fields:[
+     {id:"tr_ca", label:"Réalisation du CA TTC", short:"Réalisation CA", unit:"%", answer:99.70, formula:"Taux = (résultat ÷ objectif) × 100", hint:"Objectif : 1 800 € TTC.", traps:[{v:83.08,msg:"L'objectif est en TTC."},{v:100.30,msg:"Division inversée."}]},
+     {id:"tr_ben", label:"Réalisation du bénéfice", short:"Réalisation bénéfice", unit:"%", answer:111.08, formula:"Taux = (résultat ÷ objectif) × 100", hint:"Objectif : 500 €.", traps:[{v:90.02,msg:"Division inversée."}]}]},
+   {type:"qcm", id:"q_obj", titre:"Objectifs", res:["r4"], uses:["tr_ca","tr_ben"],
+    question:"Quels objectifs sont atteints ?",
+    options:["Les deux","Le bénéfice seulement","Le CA seulement","Aucun"], correct:1,
+    explain:"Bénéfice : 111,08 %. CA : 99,70 %, il manque 5,40 €."},
+   {type:"text", id:"t_ca", titre:"Ma proposition", res:["r4"], uses:["tr_ca"], question:"Une action pour atteindre l'objectif de CA l'an prochain.", placeholder:"Je propose de …"}
+  ]}
+];
+const FIELDS = {};
+MISSIONS.forEach((m,mi)=>m.steps.forEach(s=>{ if(!s.type) s.type="calc"; (s.fields||[]).forEach(f=>FIELDS[f.id]={...f,mission:mi}); }));
+
+/* ================= ÉTAT ================= */
+const KEY = "seve-sel-calculs-v2";
+const blank = () => ({name:"",prenom:"",classe:"",start:0,view:"home",page:[0,0,0],f:{},q:{},t:{}});
+let S = load() || blank();
+function load(){ try{ const x = localStorage.getItem(KEY); return x ? JSON.parse(x) : null; }catch(e){ return null; } }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+const fst = id => S.f[id] || (S.f[id] = {tries:0,done:false,status:"",val:""});
+const nf = (n,d=2) => Number(n).toLocaleString("fr-FR",{minimumFractionDigits:d,maximumFractionDigits:d});
+const show = f => nf(f.answer, f.dec ?? 2) + (f.unit ? " "+f.unit : "");
+const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const lab = f => f.mission===1 ? `${P[f.id[0]].c} · ${f.short}` : f.short;
+
+function stepDone(s){
+  if(s.type==="calc") return s.fields.every(f=>fst(f.id).done);
+  if(s.type==="qcm") return !!(S.q[s.id]&&S.q[s.id].done);
+  return !!(S.t[s.id]&&S.t[s.id].done);
+}
+const mDone = mi => MISSIONS[mi].steps.every(stepDone);
+const mOpen = mi => mi===0 || mDone(mi-1);
+
+/* ================= EN-TÊTE ================= */
+function renderHeader(){
+  const items = MISSIONS.map((m,i)=>({l:m.court,v:"m"+i,open:S.start&&mOpen(i),ok:mDone(i)}));
+  items.push({l:"Bilan",v:"bilan",open:S.start&&mDone(2),ok:false});
+  document.getElementById("steps").innerHTML = items.map((it,i)=>`<li><button type="button" data-go="${it.v}" ${it.open?"":"disabled"} ${S.view===it.v?'aria-current="step"':""} aria-label="${it.l}"><span class="dot">${it.ok?"✓":i+1}</span><span class="lbl">${it.l}</span></button></li>`).join("");
+  document.getElementById("carnetBtn").hidden = !S.start || S.view==="home";
+}
+function go(v){ S.view=v; save(); render(); window.scrollTo({top:0}); }
+document.getElementById("steps").addEventListener("click",e=>{ const b=e.target.closest("[data-go]"); if(b&&!b.disabled) go(b.dataset.go); });
+
+/* ================= RESSOURCES ================= */
+function resR1(){ return `<div class="res"><div class="res-h">Ressource 1 · Fiches produits</div><div class="res-b">
+ <div class="prod"><span class="pn">${P.A.nom}</span><span>PV TTC</span><b>24,90 €</b><span>Prix d'achat HT</span><b>9,00 €</b></div>
+ <div class="prod"><span class="pn">${P.B.nom}</span><span>PV TTC</span><b>6,90 €</b><span>Coefficient multiplicateur</span><b>2,50</b></div>
+ <div class="prod"><span>TVA</span><b>20 %</b></div></div></div>`; }
+function resR2(){ return `<div class="res"><div class="res-h">Ressource 2 · Cahier des charges (mai)</div><div class="res-b"><ul>
+ <li>Sérum : <b>remise 20 %</b> sur le PV TTC</li><li>PV TTC promo <b>&lt; 20 €</b></li><li>Marge du sérum <b>&gt; 7 €</b></li><li>Baume : prix habituel</li></ul></div></div>`; }
+function resCad(k){
+  const d = CAD[k], mois = ["Mars","Avril","Mai"];
+  return `<div class="res"><div class="res-h">Cadencier · ${P[k].nom}</div><div class="res-b">
+  <table class="mini"><thead><tr><th>Mois</th><th>S</th><th>C</th><th>L</th><th>V</th></tr></thead><tbody>
+  ${d.m.map((m,i)=>`<tr><td>${mois[i]}</td><td>${m[0]}</td><td>${m[1]}</td><td>${m[2]}</td><td class="v">${m[3]}</td></tr>`).join("")}
+  <tr><td>Stock final</td><td colspan="4"><b>${d.sf}</b></td></tr></tbody></table>
+  <div class="legend">S stock début de mois · C commande · L livraison · V ventes · 1 mois = 30 j</div></div></div>`;
+}
+function resR4(){ return `<div class="res"><div class="res-h">Ressource 4 · Opération Fête des mères</div><div class="res-b"><ul>
+ <li>Objectif CA : <b>1 800 € TTC</b></li><li>Objectif bénéfice : <b>500 €</b></li><li>Présentoir : <b>90 € HT</b></li><li>Flyers : <b>60 € HT</b></li></ul></div></div>`; }
+function resStock(){
+  const rows = Object.keys(P).map(k=>`<tr><td>${P[k].c}</td><td>${nf(FIELDS[k+"_rot"].answer)}</td><td>${nf(FIELDS[k+"_d"].answer)} j</td></tr>`).join("");
+  return `<div class="res"><div class="res-h">Mes résultats · stock</div><div class="res-b"><table class="mini"><thead><tr><th>Produit</th><th>Rotation</th><th>Durée</th></tr></thead><tbody>${rows}</tbody></table><div class="legend">Seuil : 20 jours maximum</div></div></div>`;
+}
+function resHTML(key){
+  if(key.startsWith("cad:")) return resCad(key.slice(4));
+  return {r1:resR1,r2:resR2,r4:resR4,stock:resStock}[key]();
+}
+function usesHTML(ids){
+  if(!ids||!ids.length) return "";
+  return `<div class="mine"><div class="mh">Mon carnet</div>${ids.map(id=>{const f=FIELDS[id],st=fst(id);
+    return `<div class="l ${st.done?"":"wait"}" data-use="${id}"><span>${lab(f)}</span><b>${st.done?show(f):"…"}</b></div>`;}).join("")}</div>`;
+}
+
+/* ================= CARNET ================= */
+function carnetHTML(){
+  let h = `<h2>Mon carnet de calculs</h2>`;
+  MISSIONS.forEach((m,mi)=>{
+    if(!mOpen(mi)) return;
+    h += `<div class="grp"><div class="grp-t">Mission ${mi+1} · ${m.titre}</div>`;
+    m.steps.forEach(s=>(s.fields||[]).forEach(f0=>{ const f=FIELDS[f0.id], st=fst(f.id);
+      h += st.done ? `<div class="l"><span>${lab(f)}</span><span>${show(f)}${st.status==="aide"?' <span class="h">(aide)</span>':""}</span></div>`
+                   : `<div class="l todo"><span>${lab(f)}</span><span>à calculer</span></div>`; }));
+    h += `</div>`;
+  });
+  return h;
+}
+const sheet = document.getElementById("sheet");
+document.getElementById("carnetBtn").onclick = ()=>{ document.getElementById("sheetBody").innerHTML = carnetHTML(); sheet.hidden = false; document.getElementById("sheetClose").focus(); };
+document.getElementById("sheetClose").onclick = ()=> sheet.hidden = true;
+sheet.addEventListener("click",e=>{ if(e.target===sheet) sheet.hidden = true; });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") sheet.hidden = true; });
+
+/* ================= ACCUEIL ================= */
+function renderHome(){
+  document.getElementById("app").innerHTML = `<section class="home">
+   <div class="hero"><h1>Du prix au bénéfice</h1><p>Stage chez Sève &amp; Sel, cosmétiques naturels. 3 missions qui s'enchaînent.</p></div>
+   <div class="card">
+    <ul class="rules"><li>À gauche : la ressource. À droite : ton calcul.</li><li>Erreur → la formule s'affiche.</li><li>3 erreurs → la réponse est donnée.</li><li>Arrondis à 2 chiffres après la virgule.</li></ul>
+    <div><label for="nom">Nom</label><input id="nom" autocomplete="family-name" value="${esc(S.name)}"></div>
+    <div><label for="prenom">Prénom</label><input id="prenom" autocomplete="given-name" value="${esc(S.prenom)}"></div>
+    <div><label for="classe">Classe</label><input id="classe" value="${esc(S.classe||"T Bac Pro MCV")}"></div>
+    <div class="err" id="err" aria-live="polite"></div>
+    <button class="btn" id="startBtn" type="button">${S.start?"Reprendre":"Commencer"}</button>
+    ${S.start?'<button class="btn ghost" id="resetBtn" type="button">Tout recommencer</button>':""}
+   </div></section>`;
+  document.getElementById("startBtn").onclick = ()=>{
+    const n=nom.value.trim(), p=prenom.value.trim();
+    if(!n||!p){ err.textContent="Écris ton nom et ton prénom."; return; }
+    S.name=n; S.prenom=p; S.classe=classe.value.trim()||"—"; if(!S.start) S.start=Date.now();
+    let v="m0"; for(let i=0;i<3;i++) if(mOpen(i)) v="m"+i; if(mDone(2)) v="bilan"; go(v);
+  };
+  const r=document.getElementById("resetBtn"); if(r) r.onclick=resetAll;
+}
+function resetAll(){ if(confirm("Effacer tout ton travail ?")){ S=blank(); save(); render(); } }
+
+/* ================= PAGE DE CALCUL ================= */
+function fieldHTML(f){
+  const st=fst(f.id), cls=st.done?(st.status==="aide"?"help":"ok"):"";
+  const v = st.done ? esc(st.status==="aide"?nf(f.answer,f.dec??2):st.val) : "";
+  return `<div class="field ${cls}" data-f="${f.id}"><label for="in-${f.id}">${f.label}</label>
+   <div class="row"><input id="in-${f.id}" inputmode="decimal" enterkeyhint="done" autocomplete="off" value="${v}" ${st.done?"disabled":""}>
+   <span class="unit">${f.unit}</span><button class="btn" type="button" data-check="${f.id}" ${st.done?"disabled":""}>Vérifier</button></div>
+   <div class="fb" id="fb-${f.id}" aria-live="polite">${feedback(f)}</div></div>`;
+}
+function feedback(f,x){
+  const st=fst(f.id);
+  if(st.done){
+    if(st.status==="first") return `<span class="ok-m">✓ Juste !</span>`;
+    if(st.status==="retry") return `<span class="ok-m">✓ Juste (${st.tries+1} essais)</span>`;
+    return `<div class="reveal">Réponse : <b>${show(f)}</b><br>Formule : <b>${f.formula}</b></div>`;
+  }
+  if(x&&x.t==="round") return `<span class="ko-m">Presque : vérifie l'arrondi.</span>`;
+  if(x&&x.t==="nan") return `<span class="ko-m">Écris un nombre (ex : 12,50).</span>`;
+  if(!st.tries) return "";
+  let h=`<span class="ko-m">✗ Faux · essai ${st.tries}/3</span>`;
+  if(x&&x.t==="trap") h+=`<span class="hint">${x.msg}</span>`;
+  h+=`<span class="formula">${f.formula}</span>`;
+  if(st.tries>=2) h+=`<span class="hint">Aide : ${f.hint}</span>`;
+  return h;
+}
+function parseNum(s){
+  const c=String(s).replace(/\s|\u00a0/g,"").replace(/€|%|jours?|j$/gi,"").replace(",",".");
+  return /^-?\d+(\.\d+)?$/.test(c) ? parseFloat(c) : NaN;
+}
+function check(id){
+  const f=FIELDS[id], st=fst(id); if(st.done) return;
+  const input=document.getElementById("in-"+id), fb=document.getElementById("fb-"+id);
+  const v=parseNum(input.value);
+  if(isNaN(v)){ fb.innerHTML=feedback(f,{t:"nan"}); return; }
+  const acc=f.accept||[f.answer];
+  if(acc.some(a=>Math.abs(v-a)<0.0051)){ st.done=true; st.status=st.tries?"retry":"first"; st.val=input.value.trim(); }
+  else if(acc.some(a=>Math.abs(v-a)<0.06)){ fb.innerHTML=feedback(f,{t:"round"}); return; }
+  else{
+    st.tries++;
+    const trap=(f.traps||[]).find(t=>Math.abs(v-t.v)<0.0051);
+    if(st.tries>=3){ st.done=true; st.status="aide"; }
+    else{ save(); fb.innerHTML=feedback(f,trap?{t:"trap",msg:trap.msg}:null); input.select(); return; }
+  }
+  save();
+  input.closest(".field").outerHTML=fieldHTML(f);
+  refresh();
+  const nxt=document.querySelector(".field input:not(:disabled)");
+  if(nxt) nxt.focus({preventScroll:true});
+}
+function qcmHTML(s){
+  const q=S.q[s.id]||{}, type=s.multi?"checkbox":"radio";
+  const opts=s.options.map((o,i)=>{
+    let cls=""; if(q.done){ const ok=s.multi?s.correct.includes(i):s.correct===i; if(ok) cls="right"; else if((q.ans||[]).includes(i)) cls="wrong"; }
+    return `<label class="choice ${cls}"><input type="${type}" name="${s.id}" value="${i}" ${(q.ans||[]).includes(i)?"checked":""} ${q.done?"disabled":""}><span>${o}</span></label>`;
+  }).join("");
+  let fb="";
+  if(q.done) fb = q.ok ? `<span class="ok-m">✓ Juste !</span> ${s.explain}` : `<div class="reveal">Bonne réponse en vert. ${s.explain}</div>`;
+  else if(q.tries) fb=`<span class="ko-m">✗ Faux · relis ta ressource.</span>`;
+  return `<p style="margin:0;font-weight:700">${s.question}</p><div class="choices">${opts}</div>
+   ${q.done?"":`<button class="btn" type="button" data-qcm="${s.id}">Valider</button>`}<div class="fb" aria-live="polite">${fb}</div>`;
+}
+function checkQcm(sid){
+  const s=MISSIONS.flatMap(m=>m.steps).find(x=>x.id===sid), q=S.q[sid]||(S.q[sid]={tries:0,done:false});
+  const ans=[...document.querySelectorAll(`input[name="${sid}"]:checked`)].map(x=>+x.value);
+  const box=document.getElementById("body");
+  if(!ans.length){ box.querySelector(".fb").innerHTML=`<span class="ko-m">Choisis une réponse.</span>`; return; }
+  q.ans=ans;
+  const ok=s.multi?(ans.length===s.correct.length&&s.correct.every(c=>ans.includes(c))):ans[0]===s.correct;
+  const max=s.options.length<=2?1:2;
+  if(ok){q.done=true;q.ok=true;} else {q.tries++; if(q.tries>=max){q.done=true;q.ok=false;}}
+  save(); box.innerHTML=qcmHTML(s); refresh();
+}
+function textHTML(s){
+  const t=S.t[s.id]||{};
+  return `<label for="ta" style="display:block;font-weight:700;margin-bottom:6px">${s.question}</label>
+   <textarea id="ta" placeholder="${esc(s.placeholder)}">${esc(t.txt||"")}</textarea>
+   <button class="btn" type="button" data-text="${s.id}" style="margin-top:6px">Enregistrer</button>
+   <div class="fb" aria-live="polite">${t.done?'<span class="ok-m">✓ Enregistré</span>':""}</div>`;
+}
+function saveText(sid){
+  const v=document.getElementById("ta").value.trim(), box=document.getElementById("body");
+  if(v.length<25){ box.querySelector(".fb").innerHTML=`<span class="ko-m">Trop court : écris 2 phrases.</span>`; return; }
+  S.t[sid]={txt:v,done:true}; save();
+  box.innerHTML=textHTML(MISSIONS.flatMap(m=>m.steps).find(x=>x.id===sid)); refresh();
+}
+
+function renderMission(mi){
+  const m=MISSIONS[mi];
+  // ne jamais ouvrir une page au-delà de la première étape non faite
+  let maxP=m.steps.findIndex(s=>!stepDone(s)); if(maxP<0) maxP=m.steps.length-1;
+  let p=Math.min(S.page[mi]||0, maxP); S.page[mi]=p;
+  const s=m.steps[p];
+  let left = (s.res||[]).map(resHTML).join("") + usesHTML(s.uses || (s.fields?[...new Set(s.fields.flatMap(f=>f.uses||[]))]:[]));
+  if(!left) left = `<p class="legend">Pas de ressource pour cette page.</p>`;
+  let right = `<h3>${s.titre}</h3>${s.cons?`<p class="cons">${s.cons}</p>`:""}<div id="body">`;
+  if(s.type==="calc") right += `<div class="fields">${s.fields.map(fieldHTML).join("")}</div>`;
+  if(s.type==="qcm") right += qcmHTML(s);
+  if(s.type==="text") right += textHTML(s);
+  right += `</div><div class="nav" id="nav"></div>`;
+  document.getElementById("app").innerHTML = `
+   <div class="mhead"><h2>Mission ${mi+1} · ${m.titre}</h2><span class="goal">${m.goal}</span></div>
+   <div class="book">
+     <section class="page res-page" aria-label="Ressources"><div class="ptitle"><span>Ressources</span><span class="legend mob" style="margin:0">fais défiler ↕</span></div>${left}</section>
+     <section class="page cp" aria-label="Calcul"><div class="ptitle"><span>Calcul</span><span>Page ${p+1} / ${m.steps.length}</span></div>${right}</section>
+   </div>`;
+  refresh();
+}
+function refresh(){
+  const mi = S.view.startsWith("m") ? +S.view[1] : -1;
+  if(mi>=0){
+    const m=MISSIONS[mi], p=S.page[mi], d=stepDone(m.steps[p]);
+    const last = p===m.steps.length-1;
+    let nextBtn;
+    if(!last) nextBtn=`<button class="btn" type="button" data-page="${p+1}" ${d?"":"disabled"}>Suivant ›</button>`;
+    else if(mi<2) nextBtn=`<button class="btn" type="button" data-go="m${mi+1}" ${d?"":"disabled"}>Mission ${mi+2} ›</button>`;
+    else nextBtn=`<button class="btn" type="button" data-go="bilan" ${d?"":"disabled"}>Mon bilan ›</button>`;
+    document.getElementById("nav").innerHTML = `<button class="btn ghost" type="button" data-page="${p-1}" ${p>0?"":"disabled"}>‹ Retour</button>${nextBtn}`;
+    document.querySelectorAll("[data-use]").forEach(el=>{ const f=FIELDS[el.dataset.use], st=fst(f.id); el.classList.toggle("wait",!st.done); el.querySelector("b").textContent=st.done?show(f):"…"; });
+  }
+  renderHeader();
+}
+document.getElementById("app").addEventListener("click",e=>{
+  const c=e.target.closest("[data-check]"); if(c) return check(c.dataset.check);
+  const q=e.target.closest("[data-qcm]"); if(q) return checkQcm(q.dataset.qcm);
+  const t=e.target.closest("[data-text]"); if(t) return saveText(t.dataset.text);
+  const pg=e.target.closest("[data-page]"); if(pg&&!pg.disabled){ const mi=+S.view[1]; S.page[mi]=+pg.dataset.page; save(); renderMission(mi); window.scrollTo({top:0}); return; }
+  const g=e.target.closest("[data-go]"); if(g&&!g.disabled) return go(g.dataset.go);
+});
+document.getElementById("app").addEventListener("keydown",e=>{
+  if(e.key==="Enter"&&e.target.matches(".field input")){ e.preventDefault(); check(e.target.id.slice(3)); }
+});
+
+/* ================= BILAN ================= */
+function renderBilan(){
+  const c={first:0,retry:0,aide:0};
+  Object.keys(FIELDS).forEach(id=>{ const st=fst(id); if(st.done) c[st.status]++; });
+  const qs=MISSIONS.flatMap(m=>m.steps).filter(s=>s.type==="qcm");
+  const qok=qs.filter(s=>S.q[s.id]&&S.q[s.id].ok).length;
+  const mins=Math.max(1,Math.round((Date.now()-S.start)/60000));
+  const stat=st=>st.status==="first"?'<span class="st a">✓</span>':st.status==="retry"?`<span class="st b">✓${st.tries+1}</span>`:'<span class="st c">A</span>';
+  const row=id=>{const f=FIELDS[id];return `<tr><td>${f.short}</td><td>${show(f)}</td><td>${stat(fst(id))}</td></tr>`;};
+  const qrow=s=>{const q=S.q[s.id]||{};return `<tr><td>${s.titre}</td><td></td><td>${q.ok?'<span class="st a">✓</span>':'<span class="st c">A</span>'}</td></tr>`;};
+  const ids=mi=>MISSIONS[mi].steps.flatMap(s=>(s.fields||[]).map(f=>f.id));
+  const qOf=mi=>MISSIONS[mi].steps.filter(s=>s.type==="qcm").map(qrow).join("");
+  const m2=Object.keys(P).map(k=>`<tr><td>${P[k].c}</td>${["_v","_sm","_rot","_d"].map(x=>{const f=FIELDS[k+x];return `<td>${nf(f.answer,f.dec??2)} ${stat(fst(f.id))}</td>`;}).join("")}</tr>`).join("");
+  const pl=(n,w)=>n+" "+w+(n>1?"s":"");
+  document.getElementById("app").innerHTML=`<section class="bilan">
+   <div class="b-head"><h1>Bilan · Calculs commerciaux</h1><div><b>${esc(S.prenom)} ${esc(S.name)}</b> · ${esc(S.classe)}<br>${new Date().toLocaleString("fr-FR",{dateStyle:"short",timeStyle:"short"})} · ${mins} min</div></div>
+   <div class="score"><span class="s1">${pl(c.first,"juste")} du 1er coup</span><span class="s2">${pl(c.retry,"juste")} après essais</span><span class="s3">${pl(c.aide,"aide")}</span><span class="s2">Analyse ${qok}/${qs.length}</span></div>
+   <div class="b-cols">
+    <div class="b-col"><h2>1 · Prix</h2><table class="b-t"><tbody>${ids(0).map(row).join("")}${qOf(0)}</tbody></table></div>
+    <div class="b-col"><h2>2 · Stock</h2><table class="b-t"><thead><tr><th></th><th>Ventes</th><th>St. moy.</th><th>Rot.</th><th>Durée</th></tr></thead><tbody>${m2}</tbody></table>
+      <table class="b-t"><tbody>${qOf(1)}</tbody></table><div class="b-com"><b>Commentaire :</b> ${esc((S.t.t_stock||{}).txt||"—")}</div></div>
+    <div class="b-col"><h2>3 · CA</h2><table class="b-t"><tbody>${ids(2).map(row).join("")}${qOf(2)}</tbody></table><div class="b-com"><b>Proposition :</b> ${esc((S.t.t_ca||{}).txt||"—")}</div></div>
+   </div>
+   <div class="legend" style="margin-top:6px">✓ juste du premier coup · ✓2, ✓3 juste après 2 ou 3 essais · A réponse donnée</div></section>
+   <div class="capture"><b>Pour rendre ton travail :</b> fais une capture d'écran de ce bilan et envoie-la à ta professeure.</div>
+   <div class="b-actions"><button class="btn" type="button" onclick="window.print()">Enregistrer en PDF</button><button class="btn ghost" type="button" data-go="m0">Revoir</button><button class="btn ghost" type="button" id="reset2">Recommencer</button></div>`;
+  document.getElementById("reset2").onclick=resetAll;
+}
+
+/* ================= RENDU ================= */
+function render(){
+  if(!S.start||S.view==="home"){ S.view="home"; renderHome(); }
+  else if(S.view==="bilan") renderBilan();
+  else renderMission(+S.view[1]);
+  renderHeader();
+}
+render();
+</script>
+</body>
+</html>
